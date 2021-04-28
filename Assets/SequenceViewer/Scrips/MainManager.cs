@@ -5,6 +5,7 @@ using System.IO;
 using TriLibCore;
 using UnityEngine;
 using UnityEngine.Networking;
+using UnityEngine.UI;
 
 public class MainManager : MonoBehaviour
 {
@@ -18,12 +19,13 @@ public class MainManager : MonoBehaviour
     public Material baseMaterial;
     public Transform modelPos;
     public Transform modelParent;
-    public int maxSize;
-    public int startIndex;
+    public int frameCount;
+    private int startIndex;
     public int currentIndex;
     public float frameRate;
     private float interval;
     private AssetLoaderOptions assetLoaderOptions;
+    public Text frameText;
     // Start is called before the first frame update
     void Start()
     {
@@ -43,8 +45,9 @@ public class MainManager : MonoBehaviour
 
     public void ReadFiles()
     {
+        GetFirstIndex();
         Debug.LogWarning("ReadFiles");
-        for (int i = startIndex; i < startIndex+maxSize; i++)
+        for (int i = startIndex; i < startIndex+frameCount; i++)
         {
             string indexStr = i.ToString().PadLeft(6,'0');
             string modelFilePath = $"{folderPath}{indexStr}.obj";
@@ -96,12 +99,31 @@ public class MainManager : MonoBehaviour
         UpdateModelByIndex(currentIndex);
     }
 
+    public void GetFirstIndex() {
+
+        string[] txtFiles = Directory.GetFiles(folderPath);
+        frameCount = txtFiles.Length / 4;
+
+        for (int i = 0; i < 100000; i++) {
+            string indexStr = i.ToString().PadLeft(6, '0');
+            string modelFilePath = $"{folderPath}{indexStr}.obj";
+
+            if (IsFileExist(modelFilePath)) {
+                startIndex = i;
+                Debug.LogWarning("startIndex is:"+ startIndex);
+                break;
+            }
+            else { 
+            
+            }
+        }
+    }
+
     public void PlayOrPause()
     {
         if (isPlaying)
         {
             isPlaying = !isPlaying;
-            Pause();
         }
         else
         {
@@ -128,6 +150,7 @@ public class MainManager : MonoBehaviour
                 currentIndex = 0;
             }
             UpdateModelByIndex(currentIndex);
+            frameText.text = currentIndex.ToString();
             currentIndex += 1;
             yield return new WaitForSeconds(interval);
         }
@@ -141,11 +164,6 @@ public class MainManager : MonoBehaviour
         currentModelSequenceItem = ModelSequenceItemList[currentIndex];
     }
 
-    public void Pause()
-    {
-
-    }
-
     //[System.Serializable]
     public class ModelSequenceItem
     {
@@ -156,47 +174,47 @@ public class MainManager : MonoBehaviour
         public Texture maskMap;
     }
 
-    /// <summary>
-    /// Called when any error occurs.
-    /// </summary>
-    /// <param name="obj">The contextualized error, containing the original exception and the context passed to the method where the error was thrown.</param>
-    private void OnError(IContextualizedError obj)
-    {
-        Debug.LogError($"An error occurred while loading your Model: {obj.GetInnerException()}");
-    }
+    ///// <summary>
+    ///// Called when any error occurs.
+    ///// </summary>
+    ///// <param name="obj">The contextualized error, containing the original exception and the context passed to the method where the error was thrown.</param>
+    //private void OnError(IContextualizedError obj)
+    //{
+    //    Debug.LogError($"An error occurred while loading your Model: {obj.GetInnerException()}");
+    //}
 
-    /// <summary>
-    /// Called when the Model loading progress changes.
-    /// </summary>
-    /// <param name="assetLoaderContext">The context used to load the Model.</param>
-    /// <param name="progress">The loading progress.</param>
-    private void OnProgress(AssetLoaderContext assetLoaderContext, float progress)
-    {
-        Debug.Log($"Loading Model. Progress: {progress:P}");
-    }
+    ///// <summary>
+    ///// Called when the Model loading progress changes.
+    ///// </summary>
+    ///// <param name="assetLoaderContext">The context used to load the Model.</param>
+    ///// <param name="progress">The loading progress.</param>
+    //private void OnProgress(AssetLoaderContext assetLoaderContext, float progress)
+    //{
+    //    Debug.Log($"Loading Model. Progress: {progress:P}");
+    //}
 
-    /// <summary>
-    /// Called when the Model (including Textures and Materials) has been fully loaded, or after any error occurs.
-    /// </summary>
-    /// <remarks>The loaded GameObject is available on the assetLoaderContext.RootGameObject field.</remarks>
-    /// <param name="assetLoaderContext">The context used to load the Model.</param>
-    private void OnMaterialsLoad(AssetLoaderContext assetLoaderContext)
-    {
-        Debug.Log("Materials loaded. Model fully loaded.");
-    }
+    ///// <summary>
+    ///// Called when the Model (including Textures and Materials) has been fully loaded, or after any error occurs.
+    ///// </summary>
+    ///// <remarks>The loaded GameObject is available on the assetLoaderContext.RootGameObject field.</remarks>
+    ///// <param name="assetLoaderContext">The context used to load the Model.</param>
+    //private void OnMaterialsLoad(AssetLoaderContext assetLoaderContext)
+    //{
+    //    Debug.Log("Materials loaded. Model fully loaded.");
+    //}
 
-    /// <summary>
-    /// Called when the Model Meshes and hierarchy are loaded.
-    /// </summary>
-    /// <remarks>The loaded GameObject is available on the assetLoaderContext.RootGameObject field.</remarks>
-    /// <param name="assetLoaderContext">The context used to load the Model.</param>
-    private void OnLoad(AssetLoaderContext assetLoaderContext)
-    {
-        assetLoaderContext.RootGameObject.transform.eulerAngles = new Vector3(180, 0, 0);
-        assetLoaderContext.RootGameObject.transform.position = modelPos.transform.position;
-        assetLoaderContext.RootGameObject.transform.parent = modelParent;
-        Debug.Log("Model loaded. Loading materials.");
-    }
+    ///// <summary>
+    ///// Called when the Model Meshes and hierarchy are loaded.
+    ///// </summary>
+    ///// <remarks>The loaded GameObject is available on the assetLoaderContext.RootGameObject field.</remarks>
+    ///// <param name="assetLoaderContext">The context used to load the Model.</param>
+    //private void OnLoad(AssetLoaderContext assetLoaderContext)
+    //{
+    //    assetLoaderContext.RootGameObject.transform.eulerAngles = new Vector3(180, 0, 0);
+    //    assetLoaderContext.RootGameObject.transform.position = modelPos.transform.position;
+    //    assetLoaderContext.RootGameObject.transform.parent = modelParent;
+    //    Debug.Log("Model loaded. Loading materials.");
+    //}
 
     public bool IsFileExist(string path)
     {

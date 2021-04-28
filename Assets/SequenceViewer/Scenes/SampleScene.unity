@@ -14471,10 +14471,10 @@ MonoBehaviour:
   baseMaterial: {fileID: 2100000, guid: 1ef1f5a88a98b84489646212c289570a, type: 2}
   modelPos: {fileID: 10812629}
   modelParent: {fileID: 855179095}
-  maxSize: 20
-  startIndex: 25
+  frameCount: 0
   currentIndex: 0
   frameRate: 15
+  frameText: {fileID: 2073114992}
 --- !u!1001 &1225079265
 PrefabInstance:
   m_ObjectHideFlags: 0
