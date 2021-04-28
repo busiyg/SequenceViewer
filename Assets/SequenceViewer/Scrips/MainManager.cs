@@ -46,13 +46,11 @@ public class MainManager : MonoBehaviour
         Debug.LogWarning("ReadFiles");
         for (int i = startIndex; i < startIndex+maxSize; i++)
         {
-            string index = $"0000{i}";
-            string modelFilePath = $"{folderPath}{index}.obj";
-            string baseMapPath = $"{folderPath}{index}_Material_0_BaseMap.png";
-            string maskMapPath = $"{folderPath}{index}_Material_0_MaskMap.png";
-            string normalMapPath = $"{folderPath}{index}_Material_0_Normal.png";
-
-
+            string indexStr = i.ToString().PadLeft(6,'0');
+            string modelFilePath = $"{folderPath}{indexStr}.obj";
+            string baseMapPath = $"{folderPath}{indexStr}_material_0_BaseMap.png";
+            string maskMapPath = $"{folderPath}{indexStr}_material_0_MaskMap.png";
+            string normalMapPath = $"{folderPath}{indexStr}_material_0_Normal.png";
 
             Debug.LogWarning(modelFilePath);
             bool isModelExist = IsFileExist(modelFilePath);
@@ -66,10 +64,7 @@ public class MainManager : MonoBehaviour
                 modelSequenceItem.obj = obj.RootGameObject.transform.GetChild(0).gameObject;
                 modelSequenceItem.meshRenderer = modelSequenceItem.obj.GetComponent<MeshRenderer>();
                 modelSequenceItem.meshRenderer.material = baseMaterial;
-
-             
-               
-
+                   
                 if (IsFileExist(baseMapPath))
                 {
                     StartCoroutine(DoWebRequestGetTexture(baseMapPath, (tex) => {
