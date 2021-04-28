@@ -14471,7 +14471,7 @@ MonoBehaviour:
   baseMaterial: {fileID: 2100000, guid: 1ef1f5a88a98b84489646212c289570a, type: 2}
   modelPos: {fileID: 10812629}
   modelParent: {fileID: 855179095}
-  maxSize: 10
+  maxSize: 20
   startIndex: 25
   currentIndex: 0
   interval: 0.06

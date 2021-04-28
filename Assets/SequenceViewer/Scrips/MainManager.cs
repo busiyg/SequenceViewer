@@ -1,8 +1,10 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using TriLibCore;
 using UnityEngine;
+using UnityEngine.Networking;
 
 public class MainManager : MonoBehaviour
 {
@@ -42,13 +44,19 @@ public class MainManager : MonoBehaviour
         Debug.LogWarning("ReadFiles");
         for (int i = startIndex; i < startIndex+maxSize; i++)
         {
+            string index = $"0000{i}";
+            string modelFilePath = $"{folderPath}{index}.obj";
+            string baseMapPath = $"{folderPath}{index}_Material_0_BaseMap.png";
+            string maskMapPath = $"{folderPath}{index}_Material_0_MaskMap.png";
+            string normalMapPath = $"{folderPath}{index}_Material_0_Normal.png";
 
-            string modelFilePath = $"{folderPath}0000{i}.obj";
+
+
             Debug.LogWarning(modelFilePath);
-            bool bo = IsFileExist(modelFilePath);
-            if (bo) {
-                var obj = AssetLoader.LoadModelFromFileNoThread(modelFilePath);
-                
+            bool isModelExist = IsFileExist(modelFilePath);
+            if (isModelExist) {
+                // Model
+                var obj = AssetLoader.LoadModelFromFileNoThread(modelFilePath);             
                 obj.RootGameObject.transform.eulerAngles = new Vector3(180, 0, 0);
                 obj.RootGameObject.transform.position = modelPos.transform.position;
                 obj.RootGameObject.transform.parent = modelParent;
@@ -56,16 +64,39 @@ public class MainManager : MonoBehaviour
                 modelSequenceItem.obj = obj.RootGameObject.transform.GetChild(0).gameObject;
                 modelSequenceItem.meshRenderer = modelSequenceItem.obj.GetComponent<MeshRenderer>();
                 modelSequenceItem.meshRenderer.material = baseMaterial;
+
+             
+               
+
+                if (IsFileExist(baseMapPath))
+                {
+                    StartCoroutine(DoWebRequestGetTexture(baseMapPath, (tex) => {
+                        modelSequenceItem.baseMap = tex;
+                    }));
+                }
+
+                if (IsFileExist(maskMapPath))
+                {
+                    StartCoroutine(DoWebRequestGetTexture(maskMapPath, (tex) => {
+                        modelSequenceItem.maskMap = tex;
+                    }));
+                }
+
+                if (IsFileExist(normalMapPath))
+                {
+                    StartCoroutine(DoWebRequestGetTexture(normalMapPath, (tex) => {
+                        modelSequenceItem.normalMap = tex;
+                    }));
+                }
                 modelSequenceItem.obj.SetActive(false);
                 ModelSequenceItemList.Add(modelSequenceItem);
-
-                //var obj = AssetLoader.LoadModelFromFile(modelFilePath, OnLoad, OnMaterialsLoad, OnProgress, OnError, null, assetLoaderOptions);
             }
             else {
                 Debug.LogError("file not exsit");
             }
         }
         currentIndex = 0;
+        UpdateModelByIndex(currentIndex);
     }
 
     public void PlayOrPause()
@@ -95,18 +126,21 @@ public class MainManager : MonoBehaviour
                 currentModelSequenceItem.obj.SetActive(false);
             }
 
-
             if (currentIndex> ModelSequenceItemList.Count-1) {
                 currentIndex = 0;
             }
-
-            ModelSequenceItemList[currentIndex].obj.SetActive(true);
-            currentModelSequenceItem = ModelSequenceItemList[currentIndex];
+            UpdateModelByIndex(currentIndex);
             currentIndex += 1;
-
-
             yield return new WaitForSeconds(interval);
         }
+    }
+
+    public void UpdateModelByIndex(int index) {
+        baseMaterial.mainTexture = ModelSequenceItemList[currentIndex].baseMap;
+        baseMaterial.SetTexture("_MaskMap", ModelSequenceItemList[currentIndex].maskMap);
+        baseMaterial.SetTexture("_NormalMap", ModelSequenceItemList[currentIndex].normalMap);
+        ModelSequenceItemList[currentIndex].obj.SetActive(true);
+        currentModelSequenceItem = ModelSequenceItemList[currentIndex];
     }
 
     public void Pause()
@@ -121,13 +155,14 @@ public class MainManager : MonoBehaviour
         fps_60
     }
 
+    //[System.Serializable]
     public class ModelSequenceItem
     {
         public GameObject obj;
         public MeshRenderer meshRenderer;
-        public Texture baseTex;
-        public Texture normalTex;
-        public Texture mapTex;
+        public Texture baseMap;
+        public Texture normalMap;
+        public Texture maskMap;
     }
 
     /// <summary>
@@ -175,5 +210,28 @@ public class MainManager : MonoBehaviour
     public bool IsFileExist(string path)
     {
         return File.Exists(path);
+    }
+
+    IEnumerator DoWebRequestGetTexture(string url, Action<Texture> onSuccess, Action<string> onError = null)
+    {
+        using (UnityWebRequest unityWebRequest = UnityWebRequestTexture.GetTexture(url))
+        {
+            yield return unityWebRequest.SendWebRequest();
+
+            if (unityWebRequest.isNetworkError || unityWebRequest.isHttpError)
+            {
+                //Debug.Log("error");
+                if (onError != null)
+                {
+                    onError(unityWebRequest.error);
+                }
+            }
+            else
+            {
+                DownloadHandlerTexture downloadHandlerTexture = unityWebRequest.downloadHandler as DownloadHandlerTexture;
+                onSuccess(downloadHandlerTexture.texture);
+
+            }
+        }
     }
 }
