@@ -68,6 +68,7 @@ public class MainManager : MonoBehaviour
                 if (IsFileExist(baseMapPath))
                 {
                     StartCoroutine(DoWebRequestGetTexture(baseMapPath, (tex) => {
+                        tex.name = indexStr;
                         modelSequenceItem.baseMap = tex;
                     }));
                 }
@@ -75,6 +76,7 @@ public class MainManager : MonoBehaviour
                 if (IsFileExist(maskMapPath))
                 {
                     StartCoroutine(DoWebRequestGetTexture(maskMapPath, (tex) => {
+                        tex.name = indexStr;
                         modelSequenceItem.maskMap = tex;
                     }));
                 }
@@ -82,6 +84,7 @@ public class MainManager : MonoBehaviour
                 if (IsFileExist(normalMapPath))
                 {
                     StartCoroutine(DoWebRequestGetTexture(normalMapPath, (tex) => {
+                        tex.name = indexStr;
                         modelSequenceItem.normalMap = tex;
                     }));
                 }
@@ -161,7 +164,7 @@ public class MainManager : MonoBehaviour
         currentModelSequenceItem = ModelSequenceItemList[currentIndex];
     }
 
-    //[System.Serializable]
+    [System.Serializable]
     public class ModelSequenceItem
     {
         public GameObject obj;
