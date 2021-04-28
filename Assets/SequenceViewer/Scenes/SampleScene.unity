@@ -14474,8 +14474,7 @@ MonoBehaviour:
   maxSize: 20
   startIndex: 25
   currentIndex: 0
-  interval: 0.06
-  assetLoaderOptions: {fileID: 0}
+  frameRate: 30
 --- !u!1001 &1225079265
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -21,11 +21,13 @@ public class MainManager : MonoBehaviour
     public int maxSize;
     public int startIndex;
     public int currentIndex;
-    public float interval;
-    public AssetLoaderOptions assetLoaderOptions;
+    public float frameRate;
+    private float interval;
+    private AssetLoaderOptions assetLoaderOptions;
     // Start is called before the first frame update
     void Start()
     {
+        interval = 1f / frameRate;
         // ReadFiles
         assetLoaderOptions = AssetLoader.CreateDefaultLoaderOptions();
         ModelSequenceItemList = new List<ModelSequenceItem>();
@@ -122,6 +124,7 @@ public class MainManager : MonoBehaviour
 
     public IEnumerator DoPlay() {
         while (isPlaying) {
+            interval = 1 / frameRate;
             if (currentModelSequenceItem!=null) {
                 currentModelSequenceItem.obj.SetActive(false);
             }
@@ -146,13 +149,6 @@ public class MainManager : MonoBehaviour
     public void Pause()
     {
 
-    }
-
-    public enum frameRate
-    {
-        fps_15,
-        fps_30,
-        fps_60
     }
 
     //[System.Serializable]
