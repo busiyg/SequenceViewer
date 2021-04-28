@@ -23,6 +23,8 @@ public class MainManager : MonoBehaviour
     private float interval;
     private AssetLoaderOptions assetLoaderOptions;
     public Text frameText;
+    public MeshRenderer meshRenderer;
+    public MeshFilter meshFilter;
     // Start is called before the first frame update
     void Start()
     {
@@ -30,8 +32,6 @@ public class MainManager : MonoBehaviour
         // ReadFiles
         assetLoaderOptions = AssetLoader.CreateDefaultLoaderOptions();
         ModelSequenceItemList = new List<ModelSequenceItem>();
-        //var obj = AssetLoader.LoadModelFromFileNoThread(filePath);
-        // var obj = AssetLoader.LoadModelFromFileNoThread()
     }
 
     // Update is called once per frame
@@ -57,14 +57,16 @@ public class MainManager : MonoBehaviour
             if (isModelExist) {
                 // Model
                 var obj = AssetLoader.LoadModelFromFileNoThread(modelFilePath);             
-                obj.RootGameObject.transform.eulerAngles = new Vector3(180, 0, 0);
-                obj.RootGameObject.transform.position = modelPos.transform.position;
-                obj.RootGameObject.transform.parent = modelParent;
+               // obj.RootGameObject.transform.eulerAngles = new Vector3(180, 0, 0);
+              //  obj.RootGameObject.transform.position = modelPos.transform.position;
+             //   obj.RootGameObject.transform.parent = modelParent;
                 ModelSequenceItem modelSequenceItem = new ModelSequenceItem();
-                modelSequenceItem.obj = obj.RootGameObject.transform.GetChild(0).gameObject;
-                modelSequenceItem.meshRenderer = modelSequenceItem.obj.GetComponent<MeshRenderer>();
-                modelSequenceItem.meshRenderer.material = baseMaterial;
-                   
+             //   modelSequenceItem.obj = obj.RootGameObject.transform.GetChild(0).gameObject;
+                //modelSequenceItem.meshRenderer = modelSequenceItem.obj.GetComponent<MeshRenderer>();
+                //modelSequenceItem.meshRenderer.material = baseMaterial;
+                modelSequenceItem.mesh = obj.RootGameObject.transform.GetChild(0).gameObject.GetComponent<MeshFilter>().mesh;
+
+
                 if (IsFileExist(baseMapPath))
                 {
                     StartCoroutine(DoWebRequestGetTexture(baseMapPath, (tex) => {
@@ -88,15 +90,17 @@ public class MainManager : MonoBehaviour
                         modelSequenceItem.normalMap = tex;
                     }));
                 }
-                modelSequenceItem.obj.SetActive(false);
+             //   modelSequenceItem.obj.SetActive(false);
                 ModelSequenceItemList.Add(modelSequenceItem);
+
+                Destroy(obj.RootGameObject);
             }
             else {
                 Debug.LogError("file not exsit");
             }
         }
         currentIndex = 0;
-        UpdateModelByIndex(currentIndex);
+       // UpdateModelByIndex(currentIndex);
     }
 
     public void GetFirstIndex() {
@@ -142,14 +146,11 @@ public class MainManager : MonoBehaviour
     public IEnumerator DoPlay() {
         while (isPlaying) {
             interval = 1 / frameRate;
-            if (currentModelSequenceItem!=null) {
-                currentModelSequenceItem.obj.SetActive(false);
-            }
-
             if (currentIndex> ModelSequenceItemList.Count-1) {
                 currentIndex = 0;
             }
-            UpdateModelByIndex(currentIndex);
+            UpdateModel(currentIndex);
+            //UpdateModelByIndex(currentIndex);
             frameText.text = currentIndex.ToString();
             currentIndex += 1;
             yield return new WaitForSeconds(interval);
@@ -157,18 +158,34 @@ public class MainManager : MonoBehaviour
     }
 
     public void UpdateModelByIndex(int index) {
+        //if (currentModelSequenceItem != null)
+        //{
+        //    currentModelSequenceItem.obj.SetActive(false);
+        //}
+
         baseMaterial.mainTexture = ModelSequenceItemList[currentIndex].baseMap;
-        baseMaterial.SetTexture("_MaskMap", ModelSequenceItemList[currentIndex].maskMap);
-        baseMaterial.SetTexture("_NormalMap", ModelSequenceItemList[currentIndex].normalMap);
-        ModelSequenceItemList[currentIndex].obj.SetActive(true);
+        //baseMaterial.SetTexture("_MaskMap", ModelSequenceItemList[currentIndex].maskMap);
+        //baseMaterial.SetTexture("_NormalMap", ModelSequenceItemList[currentIndex].normalMap);
+     //   ModelSequenceItemList[currentIndex].obj.SetActive(true);
         currentModelSequenceItem = ModelSequenceItemList[currentIndex];
+    }
+
+    public void UpdateModel(int index)
+    {
+        meshRenderer.material.mainTexture = ModelSequenceItemList[currentIndex].baseMap;
+     //   meshRenderer.material.SetTexture("_MaskMap", ModelSequenceItemList[currentIndex].maskMap);
+     //   meshRenderer.material.SetTexture("_NormalMap", ModelSequenceItemList[currentIndex].normalMap);
+        meshFilter.mesh = ModelSequenceItemList[currentIndex].mesh;
+        //ModelSequenceItemList[currentIndex].obj.SetActive(true);
+        //currentModelSequenceItem = ModelSequenceItemList[currentIndex];
     }
 
     [System.Serializable]
     public class ModelSequenceItem
     {
-        public GameObject obj;
-        public MeshRenderer meshRenderer;
+       // public GameObject obj;
+        //public MeshRenderer meshRenderer;
+        public Mesh mesh;
         public Texture baseMap;
         public Texture normalMap;
         public Texture maskMap;
@@ -242,5 +259,15 @@ public class MainManager : MonoBehaviour
 
             }
         }
+    }
+
+    public void Next() {
+        
+        if (currentIndex > ModelSequenceItemList.Count - 1)
+        {
+            currentIndex = 0;
+        }
+        UpdateModel(currentIndex);
+        currentIndex += 1;
     }
 }
