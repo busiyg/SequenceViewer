@@ -11,10 +11,7 @@ public class MainManager : MonoBehaviour
 {
     public ModelSequenceItem currentModelSequenceItem;
     public List<ModelSequenceItem> ModelSequenceItemList;
-    public string filePath;
     public string folderPath;
-    public List<GameObject> models;
-
     public bool isPlaying;
     public Material baseMaterial;
     public Transform modelPos;

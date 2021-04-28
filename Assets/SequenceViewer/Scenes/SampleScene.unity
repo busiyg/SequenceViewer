@@ -14473,7 +14473,7 @@ MonoBehaviour:
   modelParent: {fileID: 855179095}
   frameCount: 0
   currentIndex: 0
-  frameRate: 15
+  frameRate: 60
   frameText: {fileID: 2073114992}
 --- !u!1001 &1225079265
 PrefabInstance:
