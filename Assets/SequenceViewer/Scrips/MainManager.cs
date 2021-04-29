@@ -65,6 +65,7 @@ public class MainManager : MonoBehaviour
                 //modelSequenceItem.meshRenderer = modelSequenceItem.obj.GetComponent<MeshRenderer>();
                 //modelSequenceItem.meshRenderer.material = baseMaterial;
                 modelSequenceItem.mesh = obj.RootGameObject.transform.GetChild(0).gameObject.GetComponent<MeshFilter>().mesh;
+                modelSequenceItem.mesh.name = indexStr;
 
 
                 if (IsFileExist(baseMapPath))
