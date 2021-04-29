@@ -157,24 +157,24 @@ public class MainManager : MonoBehaviour
         }
     }
 
-    public void UpdateModelByIndex(int index) {
-        //if (currentModelSequenceItem != null)
-        //{
-        //    currentModelSequenceItem.obj.SetActive(false);
-        //}
+    //public void UpdateModelByIndex(int index) {
+    //    //if (currentModelSequenceItem != null)
+    //    //{
+    //    //    currentModelSequenceItem.obj.SetActive(false);
+    //    //}
 
-        baseMaterial.mainTexture = ModelSequenceItemList[currentIndex].baseMap;
-        //baseMaterial.SetTexture("_MaskMap", ModelSequenceItemList[currentIndex].maskMap);
-        //baseMaterial.SetTexture("_NormalMap", ModelSequenceItemList[currentIndex].normalMap);
-     //   ModelSequenceItemList[currentIndex].obj.SetActive(true);
-        currentModelSequenceItem = ModelSequenceItemList[currentIndex];
-    }
+    //    baseMaterial.mainTexture = ModelSequenceItemList[currentIndex].baseMap;
+    //    //baseMaterial.SetTexture("_MaskMap", ModelSequenceItemList[currentIndex].maskMap);
+    //    //baseMaterial.SetTexture("_NormalMap", ModelSequenceItemList[currentIndex].normalMap);
+    // //   ModelSequenceItemList[currentIndex].obj.SetActive(true);
+    //    currentModelSequenceItem = ModelSequenceItemList[currentIndex];
+    //}
 
     public void UpdateModel(int index)
     {
         meshRenderer.material.mainTexture = ModelSequenceItemList[currentIndex].baseMap;
-     //   meshRenderer.material.SetTexture("_MaskMap", ModelSequenceItemList[currentIndex].maskMap);
-     //   meshRenderer.material.SetTexture("_NormalMap", ModelSequenceItemList[currentIndex].normalMap);
+        meshRenderer.material.SetTexture("_MaskMap", ModelSequenceItemList[currentIndex].maskMap);
+        meshRenderer.material.SetTexture("_NormalMap", ModelSequenceItemList[currentIndex].normalMap);
         meshFilter.mesh = ModelSequenceItemList[currentIndex].mesh;
         //ModelSequenceItemList[currentIndex].obj.SetActive(true);
         //currentModelSequenceItem = ModelSequenceItemList[currentIndex];
@@ -262,12 +262,21 @@ public class MainManager : MonoBehaviour
     }
 
     public void Next() {
-        
+        currentIndex += 1;
         if (currentIndex > ModelSequenceItemList.Count - 1)
         {
             currentIndex = 0;
         }
-        UpdateModel(currentIndex);
-        currentIndex += 1;
+        UpdateModel(currentIndex);       
+    }
+
+    public void Last()
+    {
+        currentIndex -= 1;
+        if (currentIndex <0)
+        {
+            currentIndex = ModelSequenceItemList.Count - 1;
+        }
+        UpdateModel(currentIndex);       
     }
 }
