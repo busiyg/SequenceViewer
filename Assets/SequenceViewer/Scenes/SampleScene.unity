@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 1481.7451, g: 1835.5391, b: 2429.8105, a: 1}
+  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -11657,7 +11657,7 @@ MonoBehaviour:
     normalMap: {fileID: 0}
     maskMap: {fileID: 0}
   ModelSequenceItemList: []
-  folderPath: C:\Users\Yao\Desktop\XK_HDRP\
+  folderPath: C:\Users\Yao\Desktop\HK_0511\
   isPlaying: 0
   baseMaterial: {fileID: 2100000, guid: 1ef1f5a88a98b84489646212c289570a, type: 2}
   modelPos: {fileID: 0}
