@@ -123,8 +123,13 @@ public class MainManager : MonoBehaviour
             {
                 loadingText.text = $"º”‘ÿ÷–£¨«Î…‘µ»£∫{i}/{fileMaxSize}";
                 string indexStr = objFilePath.Replace(".obj", "");
+
+                string[] subStrs = indexStr.Split('\\');
+                string indexName = subStrs[subStrs.Length - 1];
+
                 var obj = AssetLoader.LoadModelFromFileNoThread(objFilePath);
                 ModelSequenceItem modelSequenceItem = new ModelSequenceItem();
+                modelSequenceItem.indexName = indexName;
                 modelSequenceItem.mesh = obj.RootGameObject.transform.GetChild(0).gameObject.GetComponent<MeshFilter>().mesh;
                 modelSequenceItem.mesh.name = objFilePath;
 
@@ -211,7 +216,7 @@ public class MainManager : MonoBehaviour
 
     public void UpdateModel(int index)
     {
-        frameText.text = currentFrameIndex.ToString();
+        frameText.text = ModelSequenceItemList[currentFrameIndex].indexName;
         slider.value = currentFrameIndex;
 
         meshRenderer.material.mainTexture = ModelSequenceItemList[currentFrameIndex].baseMap;
@@ -223,6 +228,7 @@ public class MainManager : MonoBehaviour
     [System.Serializable]
     public class ModelSequenceItem
     {
+        public string indexName;
         public Mesh mesh;
         public Texture baseMap;
         public Texture normalMap;
